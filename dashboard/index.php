@@ -126,155 +126,98 @@ color:#0d6efd;
 </head>
 
 <body>
+<div class="container-fluid mt-4">
 
-<div class="container mt-4">
+    <h2 class="text-center mb-4">
+        GPS Tracking Dashboard
+    </h2>
 
-<h2 class="text-center mb-4">
-GPS Tracking Dashboard
-</h2>
+    <!-- Dashboard Cards -->
+    <div class="row g-3">
 
-<div class="row">
-
-    <!-- Device -->
-    <div class="col-md-2">
-
-        <div class="card p-3">
-
-            <h5>Boat</h5>
-
-            <div class="value">
-                <?= htmlspecialchars($data['device_name']); ?>
+        <div class="col-lg-2 col-md-4 col-sm-6">
+            <div class="card shadow h-100">
+                <div class="card-body text-center">
+                    <h6 class="text-muted">Boat</h6>
+                    <h5><?= htmlspecialchars($data['device_name']); ?></h5>
+                </div>
             </div>
+        </div>
 
+        <div class="col-lg-2 col-md-4 col-sm-6">
+            <div class="card shadow h-100">
+                <div class="card-body text-center">
+                    <h6 class="text-muted">GPS Status</h6>
+                    <h5><?= htmlspecialchars($data['status']); ?></h5>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-2 col-md-4 col-sm-6">
+            <div class="card shadow h-100">
+                <div class="card-body text-center">
+                    <h6 class="text-muted">Passengers</h6>
+                    <h5><?= $count['total']; ?></h5>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-2 col-md-4 col-sm-6">
+            <div class="card shadow h-100">
+                <div class="card-body text-center">
+                    <h6 class="text-muted">Speed</h6>
+                    <h5 id="speed"><?= number_format($data['speed'],2); ?> km/h</h5>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-2 col-md-4 col-sm-6">
+            <div class="card shadow h-100">
+                <div class="card-body text-center">
+                    <h6 class="text-muted">Satellites</h6>
+                    <h5 id="satellites"><?= $data['satellites']; ?></h5>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-2 col-md-4 col-sm-6">
+            <div class="card shadow h-100">
+                <div class="card-body text-center">
+                    <h6 class="text-muted">Last Update</h6>
+                    <small id="last_update">
+                        <?= date("M d, Y h:i:s A", strtotime($data['recorded_at'])); ?>
+                    </small>
+                </div>
+            </div>
         </div>
 
     </div>
 
-    <!-- GPS Status -->
-    <div class="col-md-2">
+    <?php
 
-        <div class="card p-3">
+    $tripQuery = mysqli_query($conn,"
+    SELECT *
+    FROM trips
+    WHERE status='ON GOING'
+    LIMIT 1
+    ");
 
-            <h5>GPS Status</h5>
+    $activeTrip = mysqli_fetch_assoc($tripQuery);
 
-            <div class="value">
-                <?= htmlspecialchars($data['status']); ?>
-            </div>
+    ?>
 
+    <!-- Current Trip -->
+    <div class="card shadow mt-4">
+
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">🚢 Current Trip</h5>
         </div>
 
-    </div>
+        <div class="card-body">
 
-    <!-- Passenger Count -->
-    <div class="col-md-2">
+            <?php if($activeTrip){ ?>
 
-        <div class="card p-3">
-
-            <h5>Passengers</h5>
-
-            <div class="value">
-                <?= $count['total']; ?>
-            </div>
-
-        </div>
-
-    </div>
-
-    <!-- Speed -->
-    <div class="col-md-2">
-
-        <div class="card p-3">
-
-            <h5>Speed</h5>
-
-            <div class="value">
-                <?= number_format($data['speed'],2); ?> km/h
-            </div>
-
-        </div>
-
-    </div>
-
-    <!-- Satellites -->
-    <div class="col-md-2">
-
-        <div class="card p-3">
-
-            <h5>Satellites</h5>
-
-            <div class="value">
-                <?= $data['satellites']; ?>
-            </div>
-
-        </div>
-
-    </div>
-
-    <!-- Last Update -->
-    <div class="col-md-2">
-
-        <div class="card p-3">
-
-            <h5>Last Update</h5>
-
-            <div class="value">
-                <?= date("h:i:s A", strtotime($data['recorded_at'])); ?>
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-
-<div class="col-md-4">
-
-<div class="card p-3">
-
-<h5>Last Update</h5>
-
-<div class="value">
-
-<?= $data['recorded_at']; ?>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-
-<br>
-<?php
-
-$tripQuery = mysqli_query($conn,"
-SELECT *
-FROM trips
-WHERE status='ON GOING'
-LIMIT 1
-");
-
-$activeTrip = mysqli_fetch_assoc($tripQuery);
-
-?>
-
-<div class="card mb-3">
-
-    <div class="card-header bg-primary text-white">
-
-        <h5 class="mb-0">
-            🚢 Current Trip
-        </h5>
-
-    </div>
-
-    <div class="card-body">
-
-        <?php if($activeTrip){ ?>
-
-            <div class="row">
+            <div class="row text-center">
 
                 <div class="col-md-3">
                     <strong>Trip No</strong><br>
@@ -307,132 +250,135 @@ $activeTrip = mysqli_fetch_assoc($tripQuery);
             <a href="../trips/end_trip.php"
                class="btn btn-danger float-end"
                onclick="return confirm('End this trip?')">
-
                 End Trip
-
             </a>
 
-        <?php } else { ?>
+            <?php } else { ?>
 
-            <div class="alert alert-warning">
+                <div class="alert alert-warning">
+                    No Active Trip
+                </div>
 
-                <strong>No Active Trip</strong>
+                <button
+                    class="btn btn-success"
+                    data-bs-toggle="modal"
+                    data-bs-target="#startTripModal">
 
-            </div>
+                    Start Trip
 
-            <button
-                class="btn btn-success"
-                data-bs-toggle="modal"
-                data-bs-target="#startTripModal">
+                </button>
 
-                Start Trip
+            <?php } ?>
 
-            </button>
-
-        <?php } ?>
+        </div>
 
     </div>
 
-</div>
+    <!-- GPS Details -->
+    <div class="row mt-4">
 
-<div class="row">
+        <div class="col-md-6">
 
-<div class="col-md-6">
+            <div class="card shadow">
 
-<div class="card p-3">
+                <div class="card-body text-center">
 
-<h5>Latitude</h5>
+                    <h5>Latitude</h5>
 
-<div class="value">
+                    <h4 id="latitude"><?= $data['latitude']; ?></h4>
 
-<?= $data['latitude']; ?>
+                </div>
 
-</div>
+            </div>
 
-</div>
+        </div>
 
-</div>
+        <div class="col-md-6">
 
-<div class="col-md-6">
+            <div class="card shadow">
 
-<div class="card p-3">
+                <div class="card-body text-center">
 
-<h5>Longitude</h5>
+                    <h5>Longitude</h5>
 
-<div class="value">
+                    <h4 id="longitude"><?= $data['longitude']; ?></h4>
 
-<?= $data['longitude']; ?>
+                </div>
 
-</div>
+            </div>
 
-</div>
+        </div>
 
-</div>
+    </div>
 
-</div>
+    <div class="row mt-3">
 
-<br>
+        <div class="col-md-4">
 
-<div class="row">
+            <div class="card shadow">
 
-<div class="col-md-4">
+                <div class="card-body text-center">
 
-<div class="card p-3">
+                    <h5>Speed</h5>
 
-<h5>Speed</h5>
+                    <h4><?= number_format($data['speed'],2); ?> km/h</h4>
 
-<div class="value">
+                </div>
 
-<?= number_format($data['speed'],2); ?>
+            </div>
 
-km/h
+        </div>
 
-</div>
+        <div class="col-md-4">
 
-</div>
+            <div class="card shadow">
 
-</div>
+                <div class="card-body text-center">
 
-<div class="col-md-4">
+                    <h5>Altitude</h5>
 
-<div class="card p-3">
+                    <h4 id="altitude"><?= number_format($data['altitude'],2); ?> m</h4>
 
-<h5>Altitude</h5>
+                </div>
 
-<div class="value">
+            </div>
 
-<?= number_format($data['altitude'],2); ?>
+        </div>
 
-m
+        <div class="col-md-4">
 
-</div>
+            <div class="card shadow">
 
-</div>
+                <div class="card-body text-center">
 
-</div>
+                    <h5>Satellites</h5>
 
-<div class="col-md-4">
+                    <h4><?= $data['satellites']; ?></h4>
 
-<div class="card p-3">
+                </div>
 
-<h5>Satellites</h5>
+            </div>
 
-<div class="value">
+        </div>
 
-<?= $data['satellites']; ?>
+    </div>
 
-</div>
+    <!-- Map -->
+    <div class="card shadow mt-4">
 
-</div>
+        <div class="card-header bg-primary text-white">
 
-</div>
-<div class="card p-3 mt-4">
-    <h4>Live GPS Location</h4>
+            Live GPS Location
 
-    <div id="map"></div>
-</div>
+        </div>
 
-</div>
+        <div class="card-body">
+
+            <div id="map" style="height:500px;"></div>
+
+        </div>
+
+    </div>
 
 </div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
