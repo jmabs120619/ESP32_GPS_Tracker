@@ -6,8 +6,8 @@ require_once("../config/database.php");
 mysqli_query($conn,"
 UPDATE trips
 SET
-arrival_time = NOW(),
-status='COMPLETED'
+    status='COMPLETED',
+    arrival_time=NOW()
 WHERE status='ON GOING'
 ");
 
