@@ -74,6 +74,54 @@ $count = mysqli_fetch_assoc($countQuery);
 
 $result = $conn->query($sql);
 $data = $result->fetch_assoc();
+
+$totalTrips = mysqli_fetch_assoc(mysqli_query($conn,"
+SELECT COUNT(*) total
+FROM trips
+"));
+
+$completedTrips = mysqli_fetch_assoc(mysqli_query($conn,"
+SELECT COUNT(*) total
+FROM trips
+WHERE status='COMPLETED'
+"));
+
+$ongoingTrips = mysqli_fetch_assoc(mysqli_query($conn,"
+SELECT COUNT(*) total
+FROM trips
+WHERE status='ON GOING'
+"));
+
+$totalPassengers = mysqli_fetch_assoc(mysqli_query($conn,"
+SELECT COUNT(*) total
+FROM passengers
+"));
+
+/* ==========================================
+   TRIPS PER MONTH
+========================================== */
+
+$tripChart = mysqli_query($conn,"
+SELECT
+    MONTH(created_at) AS month,
+    COUNT(*) AS total
+FROM trips
+GROUP BY MONTH(created_at)
+ORDER BY MONTH(created_at)
+");
+
+$tripMonths = [];
+$tripTotals = [];
+
+while($row = mysqli_fetch_assoc($tripChart)){
+
+    $tripMonths[] = date("M", mktime(0,0,0,$row['month'],1));
+    $tripTotals[] = $row['total'];
+
+}
+
+
+
 ?>
 
 <!DOCTYPE html>
@@ -190,7 +238,117 @@ color:#0d6efd;
                 </div>
             </div>
         </div>
+<br>
 
+<h4 class="mb-3">
+    📊 System Analytics
+</h4>
+
+<div class="row">
+
+    <!-- Total Trips -->
+    <div class="col-md-3 mb-3">
+
+        <div class="card border-primary shadow-sm">
+
+            <div class="card-body text-center">
+
+                <h6 class="text-muted">
+                    Total Trips
+                </h6>
+
+                <h2 class="text-primary">
+                    <?= $totalTrips['total']; ?>
+                </h2>
+
+            </div>
+
+        </div>
+<div class="card shadow mt-4">
+
+    <div class="card-header bg-primary text-white">
+
+        <h5 class="mb-0">
+            📈 Trips Per Month
+        </h5>
+
+    </div>
+
+    <div class="card-body">
+
+        <canvas id="tripChart" height="100"></canvas>
+
+    </div>
+
+</div>
+    </div>
+
+    
+
+    <!-- Completed Trips -->
+    <div class="col-md-3 mb-3">
+
+        <div class="card border-success shadow-sm">
+
+            <div class="card-body text-center">
+
+                <h6 class="text-muted">
+                    Completed Trips
+                </h6>
+
+                <h2 class="text-success">
+                    <?= $completedTrips['total']; ?>
+                </h2>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Ongoing Trips -->
+    <div class="col-md-3 mb-3">
+
+        <div class="card border-warning shadow-sm">
+
+            <div class="card-body text-center">
+
+                <h6 class="text-muted">
+                    Ongoing Trips
+                </h6>
+
+                <h2 class="text-warning">
+                    <?= $ongoingTrips['total']; ?>
+                </h2>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Registered Passengers -->
+    <div class="col-md-3 mb-3">
+
+        <div class="card border-info shadow-sm">
+
+            <div class="card-body text-center">
+
+                <h6 class="text-muted">
+                    Registered Passengers
+                </h6>
+
+                <h2 class="text-info">
+                    <?= $totalPassengers['total']; ?>
+                </h2>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
     </div>
 
     <?php
@@ -593,4 +751,46 @@ Start Trip
 </div>
 
 </div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+
+const tripChart = new Chart(
+    document.getElementById('tripChart'),
+    {
+
+        type:'bar',
+
+        data:{
+
+            labels: <?= json_encode($tripMonths); ?>,
+
+            datasets:[{
+
+                label:'Trips',
+
+                data: <?= json_encode($tripTotals); ?>
+
+            }]
+
+        },
+
+        options:{
+
+            responsive:true,
+
+            plugins:{
+
+                legend:{
+                    display:false
+                }
+
+            }
+
+        }
+
+    }
+
+);
+
+</script>
 <?php include("../includes/footer.php"); ?>
