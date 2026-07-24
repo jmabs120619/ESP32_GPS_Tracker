@@ -23,7 +23,14 @@ Dashboard
     </a>
 </li>
 
-<a href="#">
+<li class="nav-item">
+    <a href="../trip_history/index.php" class="nav-link">
+        <i class="bi bi-clock-history"></i>
+        <span>Trip History</span>
+    </a>
+</li>
+
+<a href="/gps_tracker/live_tracking/index.php">
 <i class="bi bi-geo-alt-fill"></i>
 Live Tracking
 </a>

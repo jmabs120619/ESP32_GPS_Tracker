@@ -21,7 +21,7 @@ const char* deviceCode = "ESP32-001";
 #define LED_PIN 2
 
 unsigned long lastSend = 0;
-const unsigned long sendInterval = 5000;
+const unsigned long sendInterval = 30000;
 
 void setup()
 {
